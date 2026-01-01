@@ -5,6 +5,11 @@ on:
   schedule:
     - cron: "0 23 * * *"    # runs every day at midnight UTC
 
+permissions:
+   contents: read
+   pull-requests: write
+   security-events: write
+
 jobs:
   run-if-pr-exists:
     runs-on: ubuntu-latest
