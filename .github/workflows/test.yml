@@ -1,7 +1,6 @@
 name: Automated Pentest CI V2
 
 on:
-  pull_request: 
   workflow_dispatch:
   
 permissions:
