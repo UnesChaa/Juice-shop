@@ -1,9 +1,10 @@
 name: Full Nightly Pentest CI V2
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: "0 23 * * *"    # runs every day at midnight UTC
+  pull_request:
+  #workflow_dispatch:
+  #schedule:
+  #  - cron: "0 23 * * *"    # runs every day at midnight UTC
 
 permissions:
    contents: read
