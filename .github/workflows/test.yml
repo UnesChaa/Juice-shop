@@ -2,7 +2,10 @@ name: Automated Pentest CI V2
 
 on:
   workflow_dispatch:
-
+  
+permissions:
+  security-events: read
+  
 jobs:
   CodeQL--npm_audit:
     runs-on: ubuntu-latest
