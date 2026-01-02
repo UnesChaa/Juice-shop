@@ -1,6 +1,7 @@
 name: Automated Pentest CI
 
 on:
+
   workflow_dispatch:
 
 jobs:
