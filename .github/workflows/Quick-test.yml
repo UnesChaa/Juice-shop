@@ -62,8 +62,10 @@ jobs:
       run: npm audit --audit-level=high || true # continue the scan even if high or critical alerts were found
 
     #--  repos that belong to a GitHub organization account will have to obtain a free license  --#
-    #- name: Secrets Scan — Gitleaks
-    #  uses: gitleaks/gitleaks-action@v2.3.4
+    - name: Secrets Scan — Gitleaks
+      uses: gitleaks/gitleaks-action@v2.3.4
+      env:
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
   
   Zap-scan:
     runs-on: ubuntu-latest
