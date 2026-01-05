@@ -61,8 +61,10 @@ jobs:
     - name: npm Audit
       run: npm audit --audit-level=high || true # continue the scan even if high or critical alerts were found
 
+    #--  repos that belong to a GitHub organization account will have to obtain a free license  --#
     #- name: Secrets Scan — Gitleaks
     #  uses: gitleaks/gitleaks-action@v2.3.4
+  
   Zap-scan:
     runs-on: ubuntu-latest
 
@@ -109,7 +111,7 @@ jobs:
     - name: Smoke test
       run: curl -fI http://localhost:3000
     # ===============================
-    # DAST ZAP Baseline
+    # ZAP Baseline
     # ===============================
     
     - name: run ZAP baseline scan
@@ -146,4 +148,40 @@ jobs:
          echo "| 🟠 Medium | $MEDIUM |" >> $GITHUB_STEP_SUMMARY
          echo "| 🟡 Low    | $LOW |" >> $GITHUB_STEP_SUMMARY
          echo "| 🔵 Info   | $INFO |" >> $GITHUB_STEP_SUMMARY
+
+
+    #-------Summary in PR comments-------#
+    - name: ZAP Alert Summary
+      id: zap_summary
+      run: |
+        HIGH=$(jq '[.site[].alerts[] | select(.riskcode == "3")] | length' zap_report.json)
+        MEDIUM=$(jq '[.site[].alerts[] | select(.riskcode == "2")] | length' zap_report.json)
+        LOW=$(jq '[.site[].alerts[] | select(.riskcode == "1")] | length' zap_report.json)
+        INFO=$(jq '[.site[].alerts[] | select(.riskcode == "0")] | length' zap_report.json)
+
+        {
+        echo "ZAP_HIGH=$HIGH"
+        echo "ZAP_MEDIUM=$MEDIUM"
+        echo "ZAP_LOW=$LOW"
+        echo "ZAP_INFO=$INFO"
+        } >> $GITHUB_ENV
+
+    
+    - name: Comment ZAP Baseline Summary on PR
+      if: github.event_name == 'pull_request'
+      uses: peter-evans/create-or-update-comment@v4
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+           ## 🛡️ OWASP ZAP Baseline Scan Results
+
+           | Severity | Count |
+           |---------|-------|
+           | 🔴 High | ${{ env.ZAP_HIGH }} |
+           | 🟠 Medium | ${{ env.ZAP_MEDIUM }} |
+           | 🟡 Low | ${{ env.ZAP_LOW }} |
+           | 🔵 Info | ${{ env.ZAP_INFO }} |
+
+           📎 Full report is available in the workflow artifacts.
+
           
